@@ -6,4 +6,6 @@ COPY ifmap-server_0.3.2-1contrail1_all.deb /var/cache/apt/archives/
 RUN dpkg --unpack /var/cache/apt/archives/ifmap-server_0.3.2-1contrail1_all.deb
 RUN rm /var/lib/dpkg/info/ifmap-server.postinst -f
 RUN dpkg --configure ifmap-server
-ENTRYPOINT ["/usr/bin/ifmap-server"]
+ADD entrypoint.sh /
+RUN chmod a+x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]

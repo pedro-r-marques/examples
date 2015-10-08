@@ -8,4 +8,5 @@ RUN rm /var/lib/dpkg/info/ifmap-server.postinst -f
 RUN dpkg --configure ifmap-server
 ADD entrypoint.sh /
 RUN chmod a+x /entrypoint.sh
+RUN echo "control-node:control-node" >> /etc/ifmap-server/basicauthusers.properties
 ENTRYPOINT ["/entrypoint.sh"]

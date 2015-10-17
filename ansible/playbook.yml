@@ -1,0 +1,27 @@
+---
+- name: inventory, variables and facts
+  hosts:
+    - test
+
+  tasks:
+    - name: example task
+      command: hostname
+      register: hostname_var
+
+    - name: facts can be determined by output of tasks
+      set_fact:
+        flag_task_a: "{{ hostname_var.stdout }}"
+      when: hostname_var.rc == 0
+
+    - debug: var=flag_task_a
+    - debug: var=flag_task_b
+    - debug: var=flag_user_a
+    - debug: var=flag_user_b
+    - debug: var=flag_user_c
+
+  vars:
+    flag_task_a: "a"
+    flag_task_b: "b"
+    flag_user_a: "{{ flag_a | default('a') }} "
+    flag_user_b: "{{ flag_b | default('b') }} "
+    flag_user_c: "{{ flag_c | default('c') }} "

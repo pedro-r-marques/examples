@@ -1,0 +1,5 @@
+[test]
+localhost flag_a="foo"
+
+[test:vars]
+flag_b="bar"

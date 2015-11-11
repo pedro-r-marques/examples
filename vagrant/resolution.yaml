@@ -1,0 +1,22 @@
+---
+- name: address resolution
+  hosts: all
+  sudo: yes
+  tasks:
+    - set_fact:
+        host_address: "{{ hostvars[inventory_hostname]['ansible_' + opencontrail_interface]['ipv4']['address'] }}"
+      when: "'ipv4' in hostvars[inventory_hostname]['ansible_' + opencontrail_interface]"
+
+    - set_fact:
+        host_address: "{{ ansible_vhost0.ipv4.address }}"
+      when: "'ansible_vhost0' in hostvars[inventory_hostname]"
+
+    - name: Add entries to /etc/hosts
+      lineinfile:
+        dest=/etc/hosts
+        regexp="^{{ hostvars[item]['host_address'] }}"
+        line="{{ hostvars[item]['host_address'] }} {{ item }}"
+      with_items: groups['all']
+
+  vars:
+    opencontrail_interface: 'eth1'

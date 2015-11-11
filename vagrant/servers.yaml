@@ -1,0 +1,21 @@
+---
+- name: k8s-master
+  box: ubuntu/trusty64
+  ram: 6144
+  cpus: 4
+  ip: 192.168.1.2
+
+- name: k8s-gateway
+  box: ubuntu/trusty64
+  ram: 2048
+  ip: 192.168.1.254
+
+- name: k8s-node-01
+  box: ubuntu/trusty64
+  ram: 2048
+  ip: 192.168.1.3
+
+- name: k8s-node-02
+  box: ubuntu/trusty64
+  ram: 2048
+  ip: 192.168.1.4

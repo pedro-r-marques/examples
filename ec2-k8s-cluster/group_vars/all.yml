@@ -1,0 +1,9 @@
+---
+# username for ssh into remote VMs
+ssh_user: ubuntu
+# path used to store k8s binaries in management host
+path_tmp: /home/ubuntu/tmp
+# path used to store ansible playbook in management host
+path_src: /home/ubuntu/src
+# path in localhost where to store cluster status and inventory file
+status_dir: /Users/roque/src/examples/ec2-k8s-cluster

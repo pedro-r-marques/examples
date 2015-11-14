@@ -99,6 +99,7 @@
         vpc_subnet_id: "{{ vpc.subnets[0].id }}"
         assign_public_ip: yes
         source_dest_check: no
+        wait: yes
         count_tag:
           Name: "k8s-gateway-{{ job_id }}"
         exact_count: 1

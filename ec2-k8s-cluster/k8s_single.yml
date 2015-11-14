@@ -25,7 +25,7 @@
                 gw: igw
       register: vpc
 
-    # - debug: var=vpc.vpc_id
+    # - debug: var=vpc
     # - debug: var=vpc.subnets[0].id
 
     - name: Jump host security group
@@ -98,6 +98,7 @@
         region: "{{ aws_region }}"
         vpc_subnet_id: "{{ vpc.subnets[0].id }}"
         assign_public_ip: yes
+        source_dest_check: no
         count_tag:
           Name: "k8s-gateway-{{ job_id }}"
         exact_count: 1
@@ -133,11 +134,50 @@
         exact_count: 2
       register: k8s_nodes
 
+    # ec2_vpc_route_table is only supported in ansible 2.0+
+    # - name: Add a route to the public network
+    #   ec2_vpc_route_table:
+    #     tags:
+    #       Name: "rt-k8s-{{ job_id }}-public"
+    #     vpc_id: "{{ vpc.vpc_id }}"
+    #     region: "{{ aws_region }}"
+    #     routes:
+    #       - subnets:
+    #           - 192.168.0.0/24
+    #         routes:
+    #           - dest: 0.0.0.0/0
+    #             gw: igw
+    #           - dest: "{{ k8s_public_subnet }}"
+    #             instance_id: "{{ k8s_gateway.tagged_instances[0].id }}"
+
+    - name: Update the vpc
+      ec2_vpc:
+        state: present
+        region: "{{ aws_region }}"
+        cidr_block: 192.168.0.0/16
+        resource_tags: {"Name": "k8s-vpc-{{ job_id }}", "Cluster": "k8s-ansible-{{ job_id }}"}
+        vpc_id: "{{ vpc.vpc_id }}"
+        subnets:
+          - cidr: 192.168.0.0/24
+            resource_tags: {"Name": "k8s-{{ job_id }}-public"}
+        internet_gateway: True
+        route_tables:
+          - subnets:
+              - 192.168.0.0/24
+            routes:
+              - dest: 0.0.0.0/0
+                gw: igw
+              - dest: "{{ k8s_public_subnet }}"
+                gw: "{{ k8s_gateway.tagged_instances[0].id }}"
+
     - name: Store the status of the cluster
       template: src=status.j2 dest="{{ status_dir }}/cluster.status"
 
     - name: Create inventory file
       template: src=inventory.j2 dest="{{ status_dir }}/inventory.cluster"
+
+    - name: VPC status
+      template: src=vpc.j2 dest="{{ status_dir }}/vpc.status"
 
     - wait_for: host="{{ k8s_management.tagged_instances[0].public_dns_name }}" port=22
 
@@ -205,8 +245,12 @@
     - name: Copy inventory file
       copy: src="{{ status_dir }}/inventory.cluster" dest="{{ path_src }}/contrib/ansible/inventory"
 
-    - name: Copy address resolution playbook
-      copy: src=resolution.yml dest="{{ path_src }}/contrib/ansible"
+    - name: Copy playbooks
+      copy: src="{{ item }}" dest="{{ path_src }}/contrib/ansible"
+      with_items:
+        - resolution.yml
+        - validate.yml
+        - examples.yml
 
     - name: Enable opencontrail in group_vars
       lineinfile:

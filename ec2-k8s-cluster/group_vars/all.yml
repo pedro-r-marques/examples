@@ -7,3 +7,5 @@ path_tmp: /home/ubuntu/tmp
 path_src: /home/ubuntu/src
 # path in localhost where to store cluster status and inventory file
 status_dir: /Users/roque/src/examples/ec2-k8s-cluster
+
+k8s_public_subnet: 172.16.0.0/24

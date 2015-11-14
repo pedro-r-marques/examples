@@ -5,7 +5,7 @@ gateways
  
 [opencontrail:vars]
 localBuildOutput={{ path_tmp }}/kubernetes/server/bin
-opencontrail_public_subnet=172.16.0.0/24
+opencontrail_public_subnet={{ k8s_public_subnet }}
 
 [masters]
 {% for instance in k8s_master.tagged_instances %}

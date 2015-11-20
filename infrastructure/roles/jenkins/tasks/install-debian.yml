@@ -1,0 +1,16 @@
+---
+- name: Jenkins CI apt key
+  get_url: url=https://jenkins-ci.org/debian/jenkins-ci.org.key dest="~{{ ansible_ssh_user }}/.ansible/tmp"
+
+- name: Add key
+  command: apt-key add "~{{ ansible_ssh_user }}/.ansible/tmp/jenkins-ci.org.key"
+
+- name: Add jenkins-ci repository
+  copy: src=jenkins.apt dest=/etc/apt/sources.list.d/jenkins.list
+
+- name: Update apt cache
+  apt: update_cache=yes cache_valid_time=3600
+
+- name: Install jenkins
+  apt: name=jenkins state=present
+

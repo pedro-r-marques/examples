@@ -1,0 +1,35 @@
+---
+- name: Jenkins server
+  ec2:
+    image: "{{ image_trusty }}"
+    instance_type: m3.medium
+    key_name: infra
+    instance_tags:
+      Name: jenkins-master
+      Cluster: infra
+    region: "{{ aws_region }}"
+    vpc_subnet_id: "{{ vpc.subnets[0].id }}"
+    group_id: "{{ sg_jenkins.group_id }}"
+    assign_public_ip: yes
+    count_tag:
+      Name: jenkins-master
+    exact_count: 1
+    wait: true
+  register: instance_jenkins_master
+
+- ec2_vol:
+    name: jenkins-data
+    instance: "{{ item.id }}"
+    region: "{{ aws_region }}"
+    # volume_size: 32
+  with_items: instance_jenkins_master.tagged_instances
+
+- debug: msg="jenkins-master {{ instance_jenkins_master.tagged_instances[0].public_dns_name }}"
+
+- add_host: name='jenkins-master' groups=jenkins ansible_ssh_host="{{ instance_jenkins_master.tagged_instances[0].public_dns_name }}" ansible_ssh_user=ubuntu
+
+- template:
+    src=inventory.j2
+    dest="{{ playbook_dir }}/inventory.cluster"
+
+- wait_for: host="{{ instance_jenkins_master.tagged_instances[0].public_dns_name }}" port=22

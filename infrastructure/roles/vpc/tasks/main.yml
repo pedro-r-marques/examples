@@ -1,0 +1,45 @@
+---
+- name: VPC configuration
+  ec2_vpc:
+    state: present
+    region: "{{ aws_region }}"
+    cidr_block: 10.0.0.0/16
+    resource_tags:
+      name: opencontrail-infra-vpc
+    subnets:
+      - cidr: 10.0.0.0/20
+        resource_tags:
+          name: public
+      - cidr: 10.0.32.0/20
+        resource_tags:
+          name: private
+    internet_gateway: True
+    route_tables:
+      - subnets:
+          - 10.0.0.0/20
+        routes:
+          - dest: 0.0.0.0/0
+            gw: igw
+  register: vpc
+
+- name: Jenkins security group
+  ec2_group:
+    name: 'sg_jenkins'
+    description: "Jenkins Security Group"
+    region: "{{ aws_region }}"
+    vpc_id: "{{ vpc.vpc_id }}"
+    rules:
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 8080
+        to_port: 8080
+        cidr_ip: 0.0.0.0/0
+    rules_egress:
+      - proto: all
+        cidr_ip: 0.0.0.0/0
+  register: sg_jenkins
+
+

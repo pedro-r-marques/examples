@@ -1,0 +1,3 @@
+---
+aws_region: us-west-1
+image_trusty: ami-a88de2c8

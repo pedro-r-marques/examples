@@ -1,0 +1,2 @@
+[jenkins]
+jenkins-master ansible_ssh_host={{ instance_jenkins_master.tagged_instances[0].public_dns_name }} ansible_ssh_user=ubuntu

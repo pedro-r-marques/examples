@@ -27,4 +27,6 @@
     - ec2
     - ansible
     - docker-build-publish
+    - aws-credentials
+    - workflow-aggregator
   notify: restart jenkins

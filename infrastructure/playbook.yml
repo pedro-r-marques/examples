@@ -1,0 +1,26 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  roles:
+    - vpc
+    - instances
+
+- hosts: jenkins
+  sudo: yes
+  roles:
+    - jenkins
+    - jenkins_system
+  tags:
+    - jenkins
+  vars_files:
+    - vars/secrets.yml
+
+- hosts: jenkins
+  roles:
+    - jenkins_jobs
+  tags:
+    - jobs
+  vars_files:
+    - vars/secrets.yml
+

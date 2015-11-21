@@ -14,3 +14,15 @@
 - name: Install jenkins
   apt: name=jenkins state=present
 
+- name: Install required packages
+  apt: name="{{ item }}" state=present
+  with_items:
+    - git
+    - python-pip
+    - python-dev
+    - python-markupsafe
+    - python-netaddr
+    - python-boto
+
+- name: Install ansible
+  pip: name=ansible state=present

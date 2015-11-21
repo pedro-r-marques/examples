@@ -1,0 +1,23 @@
+---
+- name: Wait for Jenkins to start up before proceeding.
+  shell: "curl -u admin:{{ jenkins_passwd }} -D - --silent http://localhost:8080/cli/"
+  register: result
+  until: (result.stdout.find("200 OK") != -1) and (result.stdout.find("Please wait while") == -1)
+  retries: 10
+  delay: 10
+  changed_when: false
+
+- name: login
+  command: java -jar "{{ jenkins_jar_location }}" -s http://localhost:8080 login --username admin --password "{{ jenkins_passwd }}"
+
+- name: containers-ansible
+  template: src=containers-ansible-config.j2 dest="{{ job_config_tmp }}/containers-ansible-config.xml"
+
+- name: containers-ansible job
+  shell: "cat {{ job_config_tmp }}/containers-ansible-config.xml | java -jar {{ jenkins_jar_location }} -s http://localhost:8080 create-job containers-ansible-config"
+  register: create_ansible_job
+
+- debug: var=create_ansible_job.stdout
+
+
+

@@ -22,3 +22,7 @@ ansible_ssh_user=vagrant
 
 In the example above docker-machine + docker where used to start
 an http-proxy (squid) to test the http_proxy setting on this play.
+
+```
+docker run --name squid -d --publish 3128:3128 sameersbn/squid
+```

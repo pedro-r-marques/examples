@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 {% set script %}
-{% include 'containers-ansible.groovy' %}
+{% include 'container-networking-ansible.groovy' %}
 {% endset %}
 <flow-definition plugin="workflow-job@1.11">
   <actions/>
-  <description>Workflow for contrail-containers-ansible</description>
+  <description>Workflow for container-networking-ansible</description>
   <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@1.11">
     <script>
       {{ script | e }}

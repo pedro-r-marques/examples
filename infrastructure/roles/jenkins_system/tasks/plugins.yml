@@ -24,9 +24,15 @@
     creates=/var/lib/jenkins/plugins/{{ item }}.jpi
   with_items:
     - git
-    - ec2
-    - ansible
-    - docker-build-publish
-    - aws-credentials
+#   - ec2
+#   - ansible
+#   - docker-build-publish
+#   - aws-credentials
+    - ghprb
+    - ssh-credentials
+    - ssh-agent
     - workflow-aggregator
+    - plain-credentials
+    - credentials-binding
+    - parallel-test-executor
   notify: restart jenkins

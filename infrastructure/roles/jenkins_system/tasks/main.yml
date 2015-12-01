@@ -19,16 +19,22 @@
       import hudson.security.*;
       import jenkins.model.*;
       instance = Jenkins.getInstance();
+      realm = instance.getSecurityRealm();
+      if (realm == null || realm.class != hudson.security.HudsonPrivateSecurityRealm) {
       realm = new HudsonPrivateSecurityRealm(false);
       instance.setSecurityRealm(realm);
-      realm.createAccount(\"admin\", \"{{ jenkins_passwd }}\");
+      realm.createAccount("admin", "{{ jenkins_passwd }}");
+      };
+      strategy = instance.getAuthorizationStrategy();
+      if (strategy == null || strategy.class != hudson.security.GlobalMatrixAuthorizationStrategy) {
       strategy = new GlobalMatrixAuthorizationStrategy();
-      strategy.add(Jenkins.ADMINISTER, \"admin\");
+      strategy.add(Jenkins.ADMINISTER, "admin");
       instance.setAuthorizationStrategy(strategy);
+      };
       instance.save();
 
 - name: Setup authorization and authentication
-  command: curl -u "admin:{{ jenkins_passwd }}" --data-urlencode "script={{ security_script }}" http://localhost:8080/scriptText
+  command: curl -u "admin:{{ jenkins_passwd }}" --data-urlencode "script={{ security_script | replace('\"', '\\\"') }}" http://localhost:8080/scriptText
   register: script
 
 - assert:

@@ -18,6 +18,7 @@
 
 - hosts: jenkins
   roles:
+    - credentials
     - jenkins_jobs
   tags:
     - jobs

@@ -7,25 +7,23 @@
   delay: 10
   changed_when: false
 
-- name: login
-  command: java -jar "{{ jenkins_jar_location }}" -s http://localhost:8080 login --username admin --password "{{ jenkins_passwd }}"
+# - name: login
+#   command: java -jar "{{ jenkins_jar_location }}" -s http://localhost:8080 login --username admin --password "{{ jenkins_passwd }}"
 
 - name: container-networking-ansible config
   template: src=container-networking-ansible-config.j2 dest="{{ job_config_tmp }}/container-networking-ansible-config.xml"
 
 - name: list jobs
-  command: java -jar {{ jenkins_jar_location }} -s http://localhost:8080 list-jobs
+  command: java -jar {{ jenkins_jar_location }} -s http://localhost:8080 -i /var/lib/jenkins/jenkins.key list-jobs
   register: job_list
   
 - name: create container-networking-ansible job
-  shell: "cat {{ job_config_tmp }}/container-networking-ansible-config.xml | java -jar {{ jenkins_jar_location }} -s http://localhost:8080 create-job container-networking-ansible"
+  shell: "cat {{ job_config_tmp }}/container-networking-ansible-config.xml | java -jar {{ jenkins_jar_location }} -s http://localhost:8080 -i /var/lib/jenkins/jenkins.key create-job container-networking-ansible"
   register: create_job
   when: "'container-networking-ansible' not in job_list.stdout_lines"
 
 - name: update container-networking-ansible job
-  shell: "cat {{ job_config_tmp }}/container-networking-ansible-config.xml | java -jar {{ jenkins_jar_location }} -s http://localhost:8080 update-job container-networking-ansible"
+  shell: "cat {{ job_config_tmp }}/container-networking-ansible-config.xml | java -jar {{ jenkins_jar_location }} -s http://localhost:8080 -i /var/lib/jenkins/jenkins.key update-job container-networking-ansible"
   register: update_job
   when: "'container-networking-ansible' in job_list.stdout_lines"
-
-
 

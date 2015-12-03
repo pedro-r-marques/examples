@@ -17,12 +17,12 @@
     wait: true
   register: instance_jenkins_master
 
-- ec2_vol:
-    name: jenkins-data
-    instance: "{{ item.id }}"
-    region: "{{ aws_region }}"
-    # volume_size: 32
-  with_items: instance_jenkins_master.tagged_instances
+# - ec2_vol:
+#     name: jenkins-data
+#     instance: "{{ item.id }}"
+#     region: "{{ aws_region }}"
+#     # volume_size: 32
+#   with_items: instance_jenkins_master.tagged_instances
 
 - debug: msg="jenkins-master {{ instance_jenkins_master.tagged_instances[0].public_dns_name }}"
 

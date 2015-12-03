@@ -5,6 +5,8 @@
   roles:
     - vpc
     - instances
+  tags:
+    - infrastructure
 
 - hosts: jenkins
   sudo: yes

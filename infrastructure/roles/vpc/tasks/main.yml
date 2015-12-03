@@ -5,14 +5,14 @@
     region: "{{ aws_region }}"
     cidr_block: 10.0.0.0/16
     resource_tags:
-      name: opencontrail-infra-vpc
+      Name: opencontrail-ci-vpc
     subnets:
       - cidr: 10.0.0.0/20
         resource_tags:
-          name: public
+          Name: opencontrail-ci-public
       - cidr: 10.0.32.0/20
         resource_tags:
-          name: private
+          Name: opencontrail-ci-private
     internet_gateway: True
     route_tables:
       - subnets:
@@ -20,6 +20,7 @@
         routes:
           - dest: 0.0.0.0/0
             gw: igw
+        resource_tags: {"Name": "opencontrail-ci-rtb-public"}
   register: vpc
 
 - name: Jenkins security group
@@ -41,5 +42,4 @@
       - proto: all
         cidr_ip: 0.0.0.0/0
   register: sg_jenkins
-
 

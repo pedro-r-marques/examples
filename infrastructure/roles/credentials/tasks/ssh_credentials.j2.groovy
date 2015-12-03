@@ -7,7 +7,7 @@ domain = Domain.global()
 provider = Jenkins.instance.getExtensionList("com.cloudbees.plugins.credentials.SystemCredentialsProvider")[0]
 store = provider.getStore()
 
-key = new BasicSSHUserPrivateKey.DirectEntryPrivateKeySource("{{ k8s_ssh_key }}")
+key = new BasicSSHUserPrivateKey.FileOnMasterPrivateKeySource("{{ k8s_key_file_abspath.stdout }}")
 credentials = new BasicSSHUserPrivateKey(CredentialsScope.GLOBAL, "k8s", "{{ ansible_ssh_user }}", key, "", "k8s ssh key")
 store.addCredentials(domain, credentials)
 provider.save()

@@ -10,6 +10,14 @@
 # - name: login
 #   command: java -jar "{{ jenkins_jar_location }}" -s http://localhost:8080 login --username admin --password "{{ jenkins_passwd }}"
 
+- name: Configure github plugin
+  command: curl -u "admin:{{ jenkins_passwd }}" --data-urlencode "script={{ github_plugin_config_script | replace('\"', '\\\"') }}" http://localhost:8080/scriptText
+  register: github_plugin_cmd
+
+- assert:
+    that:
+      - github_plugin_cmd.stdout == ""
+
 - name: container-networking-ansible config
   template: src=container-networking-ansible-config.j2 dest="{{ job_config_tmp }}/container-networking-ansible-config.xml"
 
@@ -26,4 +34,3 @@
   shell: "cat {{ job_config_tmp }}/container-networking-ansible-config.xml | java -jar {{ jenkins_jar_location }} -s http://localhost:8080 -i /var/lib/jenkins/jenkins.key update-job container-networking-ansible"
   register: update_job
   when: "'container-networking-ansible' in job_list.stdout_lines"
-

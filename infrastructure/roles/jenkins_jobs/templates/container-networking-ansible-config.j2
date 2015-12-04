@@ -10,4 +10,9 @@
       {{ script | e }}
     </script>
   </definition>
+  <triggers>
+    <com.cloudbees.jenkins.GitHubPushTrigger plugin="github@1.14.0">
+      <spec></spec>
+    </com.cloudbees.jenkins.GitHubPushTrigger>    
+  </triggers>
 </flow-definition>

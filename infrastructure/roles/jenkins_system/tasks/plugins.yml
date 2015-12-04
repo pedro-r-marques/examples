@@ -28,7 +28,7 @@
 #   - ansible
 #   - docker-build-publish
 #   - aws-credentials
-    - ghprb
+    - github
     - ssh-credentials
     - ssh-agent
     - workflow-aggregator

@@ -11,6 +11,14 @@
 - hosts: jenkins
   sudo: yes
   roles:
+    - docker
+    - docker_services
+  tags:
+    - docker
+
+- hosts: jenkins
+  sudo: yes
+  roles:
     - jenkins
     - jenkins_system
   tags:

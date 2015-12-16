@@ -17,12 +17,19 @@
     wait: true
   register: instance_jenkins_master
 
-# - ec2_vol:
-#     name: jenkins-data
-#     instance: "{{ item.id }}"
-#     region: "{{ aws_region }}"
-#     # volume_size: 32
-#   with_items: instance_jenkins_master.tagged_instances
+- ec2_vol:
+    instance: "{{ instance_jenkins_master.tagged_instances[0].id }}"
+    region: "{{ aws_region }}"
+    state: list
+  register: ec2_vol_list
+
+- ec2_vol:
+    # name: jenkins-data
+    instance: "{{ item.id }}"
+    region: "{{ aws_region }}"
+    volume_size: 128
+  with_items: instance_jenkins_master.tagged_instances
+  when: ec2_vol_list.volumes|length == 1
 
 - debug: msg="jenkins-master {{ instance_jenkins_master.tagged_instances[0].public_dns_name }}"
 
@@ -33,3 +40,4 @@
     dest="{{ playbook_dir }}/inventory.cluster"
 
 - wait_for: host="{{ instance_jenkins_master.tagged_instances[0].public_dns_name }}" port=22
+

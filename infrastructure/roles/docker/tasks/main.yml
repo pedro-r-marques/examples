@@ -1,0 +1,29 @@
+---
+- name: install tools
+  apt: name=lvm2 state=present
+
+- name: volume group
+  lvg: vg=vg.pool pvs=/dev/xvdf
+  # pesize="{{ 120 * 1024 }}"
+
+- name: logical volume
+  lvol: vg=vg.pool lv=docker size=64g
+
+- name: metadata volume
+  lvol: vg=vg.pool lv=docker.meta size=4g
+
+- include: apt-docker-install.yml
+  when: ansible_distribution == "Ubuntu"
+
+- name: storage config
+  lineinfile:
+    dest: /etc/default/docker
+    regexp: "^(#|)DOCKER_OPTS="
+    line: "DOCKER_OPTS=\"--storage-driver=devicemapper --storage-opt dm.datadev=/dev/vg.pool/docker --storage-opt dm.metadatadev=/dev/vg.pool/docker.meta\""
+  notify:
+    - reset /var/lib/docker
+
+- name: Enable Docker
+  service: name=docker enabled=yes state=started
+  notify:
+    - start docker

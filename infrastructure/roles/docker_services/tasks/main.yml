@@ -1,0 +1,66 @@
+---
+- name: volume
+  lvol: vg=vg.pool lv=artifactory size=56g
+
+- name: file system
+  filesystem: fstype=ext4 dev=/dev/vg.pool/artifactory
+
+- name: mount fs
+  mount: name=/var/lib/artifactory src=/dev/vg.pool/artifactory fstype=ext4 state=mounted
+
+- name: docker-py module
+  pip: name=docker-py state=present
+
+- file: path="/var/lib/artifactory/{{ item }}" state=directory
+  with_items:
+    - data
+    - logs
+    - backup
+    - etc
+
+- copy: src=artifactory.default dest=/var/lib/artifactory/etc/default
+
+- name: artifactory
+  docker:
+    name: artifactory
+    image: jfrog-docker-reg2.bintray.io/jfrog/artifactory-oss:4.3.2
+    expose:
+      - 8081
+    ports:
+      - 8081:8081
+    volumes:
+      - /var/lib/artifactory/data:/var/opt/jfrog/artifactory/data
+      - /var/lib/artifactory/logs:/var/opt/jfrog/artifactory/logs
+      - /var/lib/artifactory/backup:/var/opt/jfrog/artifactory/backup
+      - /var/lib/artifactory/etc:/etc/opt/jfrog/artifactory
+
+- file: path=/etc/nginx/sites-enabled state=directory
+
+- name: Generate self-signed certificate
+  command: openssl req -x509 -newkey rsa:2048 -keyout /etc/nginx/cert.key -out /etc/nginx/cert.crt -days 365 -nodes -subj "/CN=repository.{{ aws_region }}.dev.opencontail.org"
+  args:
+    creates: /etc/nginx/cert.key
+
+- copy: src=nginx.conf dest=/etc/nginx/nginx.conf
+- get_url: url=https://raw.githubusercontent.com/nginx/nginx/master/conf/mime.types dest=/etc/nginx
+- template: src=nginx.sites.j2 dest=/etc/nginx/sites-enabled/default
+
+- name: nginx
+  docker:
+    name: nginx
+    image: nginx
+    volumes:
+      - /etc/nginx:/etc/nginx:ro
+    expose:
+      - 5000
+    ports:
+      - 5000:5000
+
+- name: squid
+  docker:
+    name: squid
+    image: sameersbn/squid
+    expose:
+      - 3128
+    ports:
+      - 3128:3128

@@ -35,6 +35,24 @@
 
 - add_host: name='jenkins-master' groups=jenkins ansible_ssh_host="{{ instance_jenkins_master.tagged_instances[0].public_dns_name }}" ansible_ssh_user=ubuntu
 
+- name: Add registry DNS entry
+  route53:
+    command: create
+    zone: "{{ aws_region }}.dev.opencontrail.org"
+    record: "registry.{{ aws_region }}.dev.opencontrail.org"
+    type: CNAME
+    value: "{{ instance_jenkins_master.tagged_instances[0].private_dns_name }}"
+    private_zone: true
+
+- name: Add web-proxy DNS entry
+  route53:
+    command: create
+    zone: "{{ aws_region }}.dev.opencontrail.org"
+    record: "web-proxy.{{ aws_region }}.dev.opencontrail.org"
+    type: CNAME
+    value: "{{ instance_jenkins_master.tagged_instances[0].private_dns_name }}"
+    private_zone: true
+
 - template:
     src=inventory.j2
     dest="{{ playbook_dir }}/inventory.cluster"

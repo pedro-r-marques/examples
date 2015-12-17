@@ -43,3 +43,11 @@
         cidr_ip: 0.0.0.0/0
   register: sg_jenkins
 
+- name: Add route53 zone
+  route53_zone:
+    region: "{{ aws_region }}"
+    state: present
+    zone: "{{ aws_region }}.dev.opencontrail.org"
+    vpc_id: "{{ vpc.vpc_id }}"
+    vpc_region: "{{ aws_region }}"
+

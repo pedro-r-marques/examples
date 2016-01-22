@@ -12,7 +12,13 @@ def fn_x() {
 
 def x = {
     node {
-        fn_x()
+        //        fn_x()
+            try {
+                sh "/bin/false"
+            } catch(ex) {
+                sleep 10
+            }
+
     }
 }
 

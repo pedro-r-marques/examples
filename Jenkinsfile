@@ -10,7 +10,13 @@ def y() {
     }
 }
 
+def tests = [
+    x: x,
+    y: y,
+]
+
 node {
      checkout scm
 }
-parallel [x, y]
+
+parallel tests

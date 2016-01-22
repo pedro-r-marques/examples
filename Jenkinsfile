@@ -1,12 +1,22 @@
 def x = {
     node {
-    	 sleep 10
+        try {
+            sh "/bin/false"
+        } catch(ex) {
+            sleep 10
+        }
     }
 }
 
 def y = {
     node {
-    	 sleep 10
+        retry(2) {
+            try {
+                sh "/bin/false"
+            } catch (ex) {
+                sleep 10
+            }
+        }
     }
 }
 
@@ -16,7 +26,7 @@ def tests = [
 ]
 
 node {
-     checkout scm
+    checkout scm
 }
 
 parallel tests

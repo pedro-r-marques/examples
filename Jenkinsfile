@@ -2,7 +2,10 @@ def fn_x() {
     try {
         sh "/bin/false"
     } catch(ex) {
-        steps.sleep(10i)
+        // Fails:
+        // sleep 10
+        // sleep 10i
+        steps.sleep(10)
     }
 }
 

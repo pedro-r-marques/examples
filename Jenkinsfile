@@ -8,15 +8,20 @@ def x = {
     }
 }
 
+def fn_y() {
+    retry(2) {
+        try {
+            sh "/bin/false"
+        } catch (ex) {
+            sleep 10
+        }
+    }
+
+}
+
 def y = {
     node {
-        retry(2) {
-            try {
-                sh "/bin/false"
-            } catch (ex) {
-                sleep 10
-            }
-        }
+        fn_y()
     }
 }
 

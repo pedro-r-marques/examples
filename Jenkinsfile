@@ -1,24 +1,14 @@
 def fn_x() {
-    // for (int i = 0; i < 2; i++) {
-    //     if (0 < i) {
-            try {
-                sh "/bin/false"
-            } catch(ex) {
-                sleep 10
-            }
-    //     }
-    // }
+    try {
+        sh "/bin/false"
+    } catch(ex) {
+        sleep 10i
+    }
 }
 
 def x = {
     node {
-        //        fn_x()
-            try {
-                sh "/bin/false"
-            } catch(ex) {
-                sleep 10
-            }
-
+        fn_x()
     }
 }
 

@@ -1,10 +1,10 @@
-def x() {
+def x = {
     node {
     	 sleep 10
     }
 }
 
-def y() {
+def y = {
     node {
     	 sleep 10
     }

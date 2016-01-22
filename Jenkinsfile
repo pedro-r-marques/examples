@@ -10,4 +10,7 @@ def y() {
     }
 }
 
+node {
+     checkout scm
+}
 parallel [x, y]
